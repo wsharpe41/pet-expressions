@@ -6,6 +6,30 @@
     <title>Home</title>
 </html>
 <body>
-    <h1>Home</h1>
-    <p>Lorem Ipsum </p>
+    <input id="photo" type="file">
+    <div id = "results"></div>
+    <scipt>
+        async function loader(reader){
+            const response = await fetch('https://wsharpe-minimal.hf.space/predict/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "data": [reader.result]
+                })
+            });
+            const json = await response.json();
+            const label = json['data'][0]['confidences'][0]['label'];
+            results.innerHTML = <br/><img src="${reader.result}" width="300px" height="300px"><br/>${label}<br/>;
+        }
+        function read(){
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                loader(reader);
+            });
+            reader.readAsDataURL(photo.files[0]);
+        }
+        photo.addEventListener('input', read);
+    </script>
 </body>
